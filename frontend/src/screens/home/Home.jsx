@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { faCheck, faPlus, faPrint, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Badge, Button, Container, Table } from "react-bootstrap";
-import { useSelector, useDispatch } from "react-redux";
+import { Badge, Button, Col, Container, Row, Table } from "react-bootstrap";
+import {  useDispatch } from "react-redux";
 import { useGetOrdersQuery, useAddItemMutation, useUpdateItemMutation } from "../../slices/ordersApiSlice"
 import Loader from "../../components/loader/Loader";
 import OrderInfo from "../../components/orders/orderInfo";
@@ -10,13 +10,16 @@ import OrderSummary from "../../components/orders/orderSummary";
 import AddProductPopup from "../../components/orders/add-products/AddProduct";
 import ProductMissingModal from "../../components/orders/missingItemPopup";
 import { setOrders } from "../../slices/orderSlice";
+import image from "../../assets/images/Avocado_Hass.jpg"
+import EditOrderModal from "../../components/orders/EditOrderItem";
 
 const Home = () => {
     const [show, setShow] = useState(false);
+    const [showEditPopup, setShowEditPopup] = useState(false);
     const [showProductMissingModal, setShowProductMissingModal] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedProduct, setSelectedProduct] = useState("");
-    const dispatch= useDispatch();
+    const [selectedProduct, setSelectedProduct] = useState();
+    const dispatch = useDispatch();
     const { data: orders, isLoading, refetch, error } = useGetOrdersQuery();
     const [addItem, { isLoading: loadingAddOrder }] = useAddItemMutation();
     const [updateItem, { isLoading: loadingUpdateOrder }] = useUpdateItemMutation()
@@ -32,6 +35,9 @@ const Home = () => {
 
     const handleCloseItemMissingModal = () => setShowProductMissingModal(false);
 
+    const handleShowEditPopup  = () => setShowEditPopup(true);
+    const handleCloseEditPopup = () => setShowEditPopup(false);
+
     const handleApproval = async (index) => {
         const orderToUpdate = orders.find((order) => order.id === index);
         if (orderToUpdate) {
@@ -41,9 +47,20 @@ const Home = () => {
         }
     };
 
-    const handleMissingItem = async (orderItem) => {
+    const handleMissingItem = (orderItem) => {
         setShowProductMissingModal(true);
         setSelectedProduct(orderItem);
+    }
+
+    const handleEditItem = (selectedOrder) => {
+        setSelectedProduct(selectedOrder)
+        handleShowEditPopup();
+    }
+
+    const handleSubmitEditItem = async(item) =>{
+        console.log(item,"item")
+        await updateItem(item)
+        refetch()
     }
 
     const handleUserChoice = async (choice) => {
@@ -64,10 +81,9 @@ const Home = () => {
     useEffect(() => {
         if (!isLoading && !error && orders) {
             console.log("Dispatch orders", orders)
-          // Dispatch the setOrders action to store initial orders
-          dispatch(setOrders(orders));
+            dispatch(setOrders(orders));
         }
-      }, [dispatch, isLoading, error, orders]);
+    }, [dispatch, isLoading, error, orders]);
 
     //     const filteredOrders = orders.filter((order) =>
     //     order.product_name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -82,6 +98,12 @@ const Home = () => {
                     handleShow={handleShow}
                     isShow={show}
                     handleModalClose={handleModalClose}
+                />
+                <EditOrderModal 
+                isShow={showEditPopup}
+                handleClose={handleCloseEditPopup}
+                order={selectedProduct}
+                handleSubmitEditItem={handleSubmitEditItem}
                 />
                 <ProductMissingModal
                     handleShowItemMissingModal={handleShowItemMissingModal}
@@ -128,7 +150,16 @@ const Home = () => {
                             {orders && orders.length > 0 &&
                                 orders.map((order) => (
                                     <tr key={order.id}>
-                                        <td>{order.product_name}</td>
+                                        <td>
+                                            <Row className="d-flex align-items-center mt-2">
+                                                <Col md={4}>
+                                                <img src={order.image} className="img-fluid mr-2 rounded w-75"  alt={order.product_name} style={{ maxWidth: '60px', maxHeight: '60px'}} />
+                                                </Col>
+                                                <Col md={6}>
+                                                <span>{order.product_name}</span>
+                                                </Col>
+                                            </Row>
+                                        </td>
                                         <td>{order.brand}</td>
                                         <td>{order.price}</td>
                                         <td>{order.quantity}</td>
@@ -136,7 +167,7 @@ const Home = () => {
                                         <td width={250}>
                                             <>
                                                 <Badge bg={order.status === "Approved" ? "success" : order.status === "Missing" ? "warning" : order.status === "Missing-Urgent" ? "danger" : ""}>{order.status === "Approved" ? "Approved" : order.status === "Missing" ? "Missing" : order.status === "Missing-Urgent" ? "Missing-Urgent" : ""}</Badge>
-                                                <div>
+                                                <div className="d-flex align-items-center justify-content-center">
                                                     <FontAwesomeIcon icon={faCheck}
                                                         className={`${order.status === "Approved" ? 'text-success' : 'text-secondary'} p-2`}
                                                         style={{ cursor: 'pointer' }}
@@ -147,6 +178,7 @@ const Home = () => {
                                                         style={{ cursor: 'pointer' }}
                                                         onClick={() => handleMissingItem(order)}
                                                     />
+                                                    <Button variant="link" className="p-2" onClick={()=>handleEditItem(order)}>Edit</Button>
                                                 </div>
                                             </>
                                         </td>

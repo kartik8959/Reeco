@@ -21,7 +21,7 @@ function ProductMissingModal({ isShow, handleClose, product, onUserChoice }) {
         <Modal.Title>Missing Product ?</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>Is <b>&quot;{product.product_name}&quot;</b> Missing?</p>
+        <p>Is <b>&quot;{product?.product_name}&quot;</b> Missing?</p>
       </Modal.Body>
       <Modal.Footer>
       <Button variant="primary" onClick={handleYesClick}>

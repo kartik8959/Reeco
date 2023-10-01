@@ -16,9 +16,12 @@ const orderSlice = createSlice({
         setOrders: (state, action) => {
             state.orders = action.payload;
             let totalAmount = state.orders.reduce((total,currentOrder)=>{
-                return total+=currentOrder.price
+                if(currentOrder.price){
+                    total+= parseFloat(currentOrder.total)
+                }
+                return total;
             },0)
-            state.total= totalAmount
+            state.total= totalAmount.toFixed(2)
             localStorage.setItem('orders', JSON.stringify(state));
         },
         setSellerInfo: (state, action) => {
