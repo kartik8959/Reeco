@@ -16,6 +16,6 @@ To run the application, follow these steps:
 ## 📌 Overview
 -Screenshot
 
-![Screenshot](./frontend\src\assets\images\sc.png?raw=true) 
+![Screenshot](./frontend/src/assets/images/sc.png?raw=true) 
 
 
