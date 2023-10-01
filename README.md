@@ -12,3 +12,10 @@ To run the application, follow these steps:
 
    ```shell
    npm run reeco
+
+## 📌 Overview
+-Screenshot
+
+![Screenshot](./frontend\src\assets\images\sc.png?raw=true) 
+
+
