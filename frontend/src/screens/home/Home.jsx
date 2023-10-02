@@ -31,8 +31,8 @@ const Home = () => {
     const { data: orders, isLoading, refetch, error } = useGetOrdersQuery();
 
     // Mutation functions for adding and updating items
-    const [addItem, { isLoading: loadingAddOrder }] = useAddItemMutation();
-    const [updateItem, { isLoading: loadingUpdateOrder }] = useUpdateItemMutation();
+    const [ addItem ] = useAddItemMutation();
+    const [ updateItem ] = useUpdateItemMutation();
 
     const handleCreateItem = async (item) => {
         await addItem(item);
