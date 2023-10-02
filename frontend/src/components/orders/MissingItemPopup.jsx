@@ -1,38 +1,27 @@
-import React, { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
 
 function ProductMissingModal({ isShow, handleClose, product, onUserChoice }) {
-  // State to track the user's choice (Yes or No)
-  const [userChoice, setUserChoice] = useState(null);
-
-  const handleYesClick = () => {
-    onUserChoice(true);
-    handleClose();
-  };
-
-  const handleNoClick = () => {
-    onUserChoice(false);
+  const handleUserChoiceClick = (choice) => {
+    onUserChoice(choice);
     handleClose();
   };
 
   return (
     <Modal show={isShow} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Missing Product ?</Modal.Title>
+        <Modal.Title>Missing Product?</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p>Is <b>&quot;{product?.product_name}&quot;</b> Missing?</p>
       </Modal.Body>
       <Modal.Footer>
-      <Button variant="primary" onClick={handleYesClick}>
+        <Button variant="primary" onClick={() => handleUserChoiceClick(true)}>
           Yes
         </Button>{" "}
-        <Button variant="secondary" onClick={handleNoClick}>
+        <Button variant="secondary" onClick={() => handleUserChoiceClick(false)}>
           No
         </Button>
-
       </Modal.Footer>
-        
     </Modal>
   );
 }
